@@ -1,0 +1,6 @@
+P:\RADIOTERAPIA\OFICINA DE PLANEACION Y FISICA MEDICA\AA_OFICINA DE PLANEACION Y FISICA MEDICA\ESTUDIANTES UV-UC\Raulinho\Programming\Eclipse Scripting API\ebrt_bt\plugins\printCourse.esapi.dll
+P:\RADIOTERAPIA\OFICINA DE PLANEACION Y FISICA MEDICA\AA_OFICINA DE PLANEACION Y FISICA MEDICA\ESTUDIANTES UV-UC\Raulinho\Programming\Eclipse Scripting API\ebrt_bt\plugins\printCourse.esapi.pdb
+P:\RADIOTERAPIA\OFICINA DE PLANEACION Y FISICA MEDICA\AA_OFICINA DE PLANEACION Y FISICA MEDICA\ESTUDIANTES UV-UC\Raulinho\Programming\Eclipse Scripting API\ebrt_bt\Projects\printCourse\obj\x64\Debug\printCourse.csproj.AssemblyReference.cache
+P:\RADIOTERAPIA\OFICINA DE PLANEACION Y FISICA MEDICA\AA_OFICINA DE PLANEACION Y FISICA MEDICA\ESTUDIANTES UV-UC\Raulinho\Programming\Eclipse Scripting API\ebrt_bt\Projects\printCourse\obj\x64\Debug\printCourse.csproj.CoreCompileInputs.cache
+P:\RADIOTERAPIA\OFICINA DE PLANEACION Y FISICA MEDICA\AA_OFICINA DE PLANEACION Y FISICA MEDICA\ESTUDIANTES UV-UC\Raulinho\Programming\Eclipse Scripting API\ebrt_bt\Projects\printCourse\obj\x64\Debug\printCourse.esapi.dll
+P:\RADIOTERAPIA\OFICINA DE PLANEACION Y FISICA MEDICA\AA_OFICINA DE PLANEACION Y FISICA MEDICA\ESTUDIANTES UV-UC\Raulinho\Programming\Eclipse Scripting API\ebrt_bt\Projects\printCourse\obj\x64\Debug\printCourse.esapi.pdb
