@@ -1,0 +1,6 @@
+P:\RADIOTERAPIA\Raulinho\Programming\Scripts 2025\vToD_v6\plugins\vToD_v6.esapi.dll
+P:\RADIOTERAPIA\Raulinho\Programming\Scripts 2025\vToD_v6\plugins\vToD_v6.esapi.pdb
+P:\RADIOTERAPIA\Raulinho\Programming\Scripts 2025\vToD_v6\Projects\vToD_v6\obj\x64\Debug\vToD_v6.csproj.AssemblyReference.cache
+P:\RADIOTERAPIA\Raulinho\Programming\Scripts 2025\vToD_v6\Projects\vToD_v6\obj\x64\Debug\vToD_v6.csproj.CoreCompileInputs.cache
+P:\RADIOTERAPIA\Raulinho\Programming\Scripts 2025\vToD_v6\Projects\vToD_v6\obj\x64\Debug\vToD_v6.esapi.dll
+P:\RADIOTERAPIA\Raulinho\Programming\Scripts 2025\vToD_v6\Projects\vToD_v6\obj\x64\Debug\vToD_v6.esapi.pdb

@@ -1,0 +1,6 @@
+C:\Users\f00007896\Desktop\Scripts 2025\vToDv5\plugins\vToD_v5.esapi.dll
+C:\Users\f00007896\Desktop\Scripts 2025\vToDv5\plugins\vToD_v5.esapi.pdb
+C:\Users\f00007896\Desktop\Scripts 2025\vToDv5\Projects\vToD_v5\obj\x64\Debug\vToD_v5.csproj.AssemblyReference.cache
+C:\Users\f00007896\Desktop\Scripts 2025\vToDv5\Projects\vToD_v5\obj\x64\Debug\vToD_v5.csproj.CoreCompileInputs.cache
+C:\Users\f00007896\Desktop\Scripts 2025\vToDv5\Projects\vToD_v5\obj\x64\Debug\vToD_v5.esapi.dll
+C:\Users\f00007896\Desktop\Scripts 2025\vToDv5\Projects\vToD_v5\obj\x64\Debug\vToD_v5.esapi.pdb

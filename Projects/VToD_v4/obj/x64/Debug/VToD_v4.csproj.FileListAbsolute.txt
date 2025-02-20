@@ -1,0 +1,6 @@
+C:\Users\f00007896\Desktop\Scripts 2025\plugins\VToD_v4.esapi.dll
+C:\Users\f00007896\Desktop\Scripts 2025\plugins\VToD_v4.esapi.pdb
+C:\Users\f00007896\Desktop\Scripts 2025\Projects\VToD_v4\obj\x64\Debug\VToD_v4.csproj.AssemblyReference.cache
+C:\Users\f00007896\Desktop\Scripts 2025\Projects\VToD_v4\obj\x64\Debug\VToD_v4.csproj.CoreCompileInputs.cache
+C:\Users\f00007896\Desktop\Scripts 2025\Projects\VToD_v4\obj\x64\Debug\VToD_v4.esapi.dll
+C:\Users\f00007896\Desktop\Scripts 2025\Projects\VToD_v4\obj\x64\Debug\VToD_v4.esapi.pdb
