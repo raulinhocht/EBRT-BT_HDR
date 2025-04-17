@@ -122,7 +122,11 @@ namespace VMS.TPS
         //----------------------------------------------------------------------------------------------------------------------
         private void ProcessEBRTCourse(Course course, StringBuilder sb, ref double totalDosisEBRT, ref int totalFraccionesEBRT, Dictionary<string, double> eqd2Total)
         {
+            // Obtener esquema de tratamiento
+            string treatmentScheme = GetTreatmentScheme(course);
             sb.AppendLine("\n========================== SECCIÓN EBRT ==========================");
+            sb.AppendLine($"║   Esquema: {treatmentScheme}   ║");
+            sb.AppendLine("------------------------------------------------------------------");
 
             // Buscar el primer plan aprobado con 28 fracciones
             var plan28Fx = course.ExternalPlanSetups
@@ -182,31 +186,28 @@ namespace VMS.TPS
             var plans = course.BrachyPlanSetups.OrderBy(p => p.Id).ToList();
             if (!plans.Any()) return;
 
-            sb.AppendLine("\n====================== SECCIÓN HDR-BT ======================");
-            // En ProcessBrachyCourse (al inicio):
-            sb.AppendLine($"║   HDR-BT: {totalDosisBT:F2} Gy en {totalFraccionesBT} fx   ║");
-            sb.AppendLine("--------------------------------------------------------------------------------------------------------------");
-            sb.Append("|Estruc/Dosis [Gy]");
+            // Obtener esquema de tratamiento
+            string treatmentScheme = GetTreatmentScheme(course);
 
-            for (int i = 1; i <= plans.Count; i++)
-            {
-                sb.Append($"| Fx #{i} | EQD2 {i} ");
-            }
-            sb.AppendLine("|   totalBED    |  totalEQD2    |");
+            sb.AppendLine("\n====================== SECCIÓN HDR-BT ======================");
+            sb.AppendLine($"║   Esquema de tratamiento: {treatmentScheme}   ║");
+            sb.AppendLine("--------------------------------------------------------------------------------------------------------------");
+            sb.AppendLine("| Estructura       | Métrica       | Fx #1    | Fx #2    | Fx #3    | Fx #4    | Fx #5    | Total     |");
             sb.AppendLine("--------------------------------------------------------------------------------------------------------------");
 
             var structures = new[]
             {
-                ("HR-CTV", targetVolumeRel90, alphaBetaTumor, "PTV+CTV"),
-                ("Recto-HDR", targetVolumeAbs2, alphaBetaOAR, "Recto"),
-                ("Vejiga-HDR", targetVolumeAbs2, alphaBetaOAR, "Vejiga"),
-                ("Sigma-HDR", targetVolumeAbs2, alphaBetaOAR, "Sigma")
+                ("HR-CTV", targetVolumeRel90, alphaBetaTumor, "PTV+CTV", "D90% [Gy]"),
+                ("Recto-HDR", targetVolumeAbs2, alphaBetaOAR, "Recto", "D2cc [Gy]"),
+                ("Vejiga-HDR", targetVolumeAbs2, alphaBetaOAR, "Vejiga", "D2cc [Gy]"),
+                ("Sigma-HDR", targetVolumeAbs2, alphaBetaOAR, "Sigma", "D2cc [Gy]")
             };
 
-            foreach (var (structureId, defaultVolume, alphaBeta, key) in structures)
+            foreach (var (structureId, defaultVolume, alphaBeta, key, metric) in structures)
             {
-                sb.Append($"| {structureId,-10} ");
-                double totalBED = 0, totalEQD2 = 0;
+                // Línea para valores de dosis
+                sb.Append($"| {structureId,-15} | {metric,-12} |");
+                double totalDose = 0;
 
                 foreach (var plan in plans)
                 {
@@ -215,7 +216,28 @@ namespace VMS.TPS
                     {
                         var estructura = plan.StructureSet.Structures.FirstOrDefault(s => s.Id == structureId);
                         if (estructura != null)
-                            volumeToUse = estructura.Volume * 0.9; // 90% del volumen
+                            volumeToUse = estructura.Volume * 0.9;
+                    }
+
+                    double doseAtVolume = GetDoseAtVolumeAbsoluta(plan, structureId, volumeToUse) / 100.0;
+                    totalDose += doseAtVolume;
+                    sb.Append($" {doseAtVolume,-7:F2} |");
+                }
+                sb.Append($" {totalDose,-7:F2} |");
+                sb.AppendLine();
+
+                // Línea para valores EQD2
+                sb.Append($"| {"",-15} | {"EQD2 [Gy]",-12} |");
+                double totalEQD2 = 0;
+
+                foreach (var plan in plans)
+                {
+                    double volumeToUse = defaultVolume;
+                    if (structureId == "HR-CTV")
+                    {
+                        var estructura = plan.StructureSet.Structures.FirstOrDefault(s => s.Id == structureId);
+                        if (estructura != null)
+                            volumeToUse = estructura.Volume * 0.9;
                     }
 
                     double doseAtVolume = GetDoseAtVolumeAbsoluta(plan, structureId, volumeToUse);
@@ -223,15 +245,53 @@ namespace VMS.TPS
                     double bed = CalculateBEDWithTimeAdjustment(dosePerFraction, (double)plan.NumberOfFractions, alphaBeta, totalTime, Tdelay, k);
                     double eqd2 = CalculateEQD2(bed, alphaBeta);
 
-                    totalBED += bed;
                     totalEQD2 += eqd2;
-                    sb.Append($"| {doseAtVolume / 100,-7:F2} | {eqd2,-7:F2} ");
+                    sb.Append($" {eqd2,-7:F2} |");
                 }
-                sb.Append($"| {totalBED,-7:F2} | {totalEQD2,-7:F2} |");
+                sb.Append($" {totalEQD2,-7:F2} |");
                 sb.AppendLine();
+
                 eqd2Total[key] += totalEQD2;
+
+                // Línea separadora
+                sb.AppendLine("--------------------------------------------------------------------------------------------------------------");
             }
-            sb.AppendLine("--------------------------------------------------------------------------------------------------------------");
+        }
+        //----------------------------------------------------------------------------------------------------------------------
+        // Método para presentar esquema de tratamiento
+        //----------------------------------------------------------------------------------------------------------------------
+        private string GetTreatmentScheme(Course course)
+        {
+            // Para cursos de EBRT
+            if (IsEBRTCourse(course.Id))
+            {
+                var firstPlan = course.ExternalPlanSetups.FirstOrDefault(p => IsPlanApproved(p));
+                if (firstPlan != null)
+                {
+                    int fractions = firstPlan.NumberOfFractions ?? 0;
+                    double totalDose = firstPlan.DosePerFraction.Dose*fractions;
+                    //string technique = firstPlan.Beams.Any(b => b.MLC != null) ? "VMAT" : "3D-CRT";
+
+                    return $"{totalDose:F1} cGy en {fractions} fx";
+                }
+                return "Esquema EBRT no especificado";
+            }
+            // Para cursos de braquiterapia
+            else if (IsBrachyCourse(course.Id))
+            {
+                var firstPlan = course.BrachyPlanSetups.FirstOrDefault();
+                if (firstPlan != null)
+                {
+                    int fractions = firstPlan.NumberOfFractions ?? 0;
+                    double totalDose = firstPlan.DosePerFraction.Dose * fractions;
+                    //string applicator = firstPlan.ApplicatorType ?? "Aplicador no especificado";
+
+                    return $"{totalDose*5:F1} cGy en {fractions*5} fx";
+                }
+                return "Esquema HDR-BT no especificado";
+            }
+
+            return "Tipo de tratamiento no reconocido";
         }
 
         //----------------------------------------------------------------------------------------------------------------------
@@ -276,7 +336,7 @@ namespace VMS.TPS
         //----------------------------------------------------------------------------------------------------------------------
         private void GenerateReportHeader(StringBuilder sb, string patientName, string patientId)
         {
-            sb.AppendLine(" PRUEBA V33 Resumen Consolidado de Datos EQD2, Ajuste por Tiempo y Evaluación");
+            sb.AppendLine(" PRUEBA V35 Resumen Consolidado de Datos EQD2, Ajuste por Tiempo y Evaluación");
             sb.AppendLine("=====================================================================================");
             sb.AppendLine($" Paciente: {patientName}");
             sb.AppendLine($" ID: {patientId}");
@@ -387,8 +447,8 @@ namespace VMS.TPS
         {
             var window = new Window
             {
-                Title = "Resumen Dosimétrico - V34",
-                Width = 1100,
+                Title = "Resumen Dosimétrico - V35",
+                Width = 1000,
                 Height = 750,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen
             };
@@ -440,7 +500,7 @@ namespace VMS.TPS
         private void ProcessColoredText(string text, TextBlock textBlock)
         {
             var lines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-    
+
             foreach (var line in lines)
             {
                 var run = new Run(line + Environment.NewLine)
